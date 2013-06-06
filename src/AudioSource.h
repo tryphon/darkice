@@ -8,19 +8,19 @@
    Version  : $Revision$
    Author   : $Author$
    Location : $HeadURL$
-   
+
    Copyright notice:
 
     This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License  
+    modify it under the terms of the GNU General Public License
     as published by the Free Software Foundation; either version 3
     of the License, or (at your option) any later version.
-   
+
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of 
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-   
+
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -265,6 +265,18 @@ class AudioSource : public Source, public virtual Reporter
         }
 
         /**
+         *  Get the number of bytes for a sample for each channel
+         *  (returns 4 bytes for 16 bits par sample in stereo)
+         *
+         *  @return the number of bits per sample.
+         */
+        inline unsigned int
+        getSampleSize ( void ) const     throw ()
+        {
+            return bitsPerSample / 8 * channel;
+        }
+
+        /**
          *  Factory method for creating an AudioSource object of the
          *  appropriate type, based on the compiled DSP support and
          *  the supplied DSP name parameter.
@@ -324,4 +336,3 @@ class AudioSource : public Source, public virtual Reporter
 
 
 #endif  /* AUDIO_SOURCE_H */
-

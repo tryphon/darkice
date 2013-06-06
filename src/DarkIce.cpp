@@ -8,20 +8,20 @@
    Version  : $Revision$
    Author   : $Author$
    Location : $HeadURL$
-   
+
 
    Copyright notice:
 
     This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License  
+    modify it under the terms of the GNU General Public License
     as published by the Free Software Foundation; either version 3
     of the License, or (at your option) any later version.
-   
+
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of 
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-   
+
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -177,7 +177,7 @@ DarkIce :: init ( const Config      & config )              throw ( Exception )
     if ( !(cs = config.get( "input")) ) {
         throw Exception( __FILE__, __LINE__, "no section [input] in config");
     }
-    
+
     str        = cs->getForSure( "sampleRate", " missing in section [input]");
     sampleRate = Util::strToL( str);
     str       = cs->getForSure( "bitsPerSample", " missing in section [input]");
@@ -270,13 +270,13 @@ DarkIce :: configIceCast (  const Config      & config,
         bitrate     = str ? Util::strToL( str) : 0;
         str         = cs->get( "quality");
         quality     = str ? Util::strToD( str) : 0.0;
-        
+
         str         = cs->getForSure( "bitrateMode",
                                       " not specified in section ",
                                       stream);
         if ( Util::strEq( str, "cbr") ) {
             bitrateMode = AudioEncoder::cbr;
-            
+
             if ( bitrate == 0 ) {
                 throw Exception( __FILE__, __LINE__,
                                  "bitrate not specified for CBR encoding");
@@ -303,8 +303,8 @@ DarkIce :: configIceCast (  const Config      & config,
             throw Exception( __FILE__, __LINE__,
                              "invalid bitrate mode: ", str);
         }
-        
-        
+
+
 
         server      = cs->getForSure( "server", " missing in section ", stream);
         str         = cs->getForSure( "port", " missing in section ", stream);
@@ -328,7 +328,7 @@ DarkIce :: configIceCast (  const Config      & config,
         fileAddDate = str ? (Util::strEq( str, "yes") ? true : false) : false;
         fileDateFormat = cs->get("fileDateFormat");
 
-        bufferSize = dsp->getBitsPerSample() / 8 * dsp->getSampleRate() * dsp->getChannel() * bufferSecs;
+        bufferSize = dsp->getSampleSize() * dsp->getSampleRate() * bufferSecs;
         reportEvent( 3, "buffer size: ", bufferSize);
 
         localDumpName = cs->get( "localDumpFile");
@@ -406,7 +406,7 @@ DarkIce :: configIceCast (  const Config      & config,
         }
 #endif
 
-        audioOuts[u].encoder = new BufferedSink(encoder, bufferSize, dsp->getBitsPerSample() / 8);
+        audioOuts[u].encoder = new BufferedSink(encoder, bufferSize, dsp->getSampleSize());
         encConnector->attach( audioOuts[u].encoder.get());
 #endif // HAVE_LAME_LIB || HAVE_TWOLAME_LIB
     }
@@ -481,7 +481,7 @@ DarkIce :: configIceCast2 (  const Config      & config,
             throw Exception( __FILE__, __LINE__,
                              "unsupported stream format: ", str);
         }
-                
+
         str         = cs->get( "sampleRate");
         sampleRate  = str ? Util::strToL( str) : dsp->getSampleRate();
         str         = cs->get( "channel");
@@ -494,13 +494,13 @@ DarkIce :: configIceCast2 (  const Config      & config,
         maxBitrate  = str ? Util::strToL( str) : 0;
         str         = cs->get( "quality");
         quality     = str ? Util::strToD( str) : 0.0;
-        
+
         str         = cs->getForSure( "bitrateMode",
                                       " not specified in section ",
                                       stream);
         if ( Util::strEq( str, "cbr") ) {
             bitrateMode = AudioEncoder::cbr;
-            
+
             if ( bitrate == 0 ) {
                 throw Exception( __FILE__, __LINE__,
                                  "bitrate not specified for CBR encoding");
@@ -545,9 +545,9 @@ DarkIce :: configIceCast2 (  const Config      & config,
         fileAddDate = str ? (Util::strEq( str, "yes") ? true : false) : false;
         fileDateFormat = cs->get( "fileDateFormat");
 
-        bufferSize = dsp->getBitsPerSample() / 8 * dsp->getSampleRate() * dsp->getChannel() * bufferSecs;
+        bufferSize = dsp->getSampleSize() * dsp->getSampleRate() * bufferSecs;
         reportEvent( 3, "buffer size: ", bufferSize);
-        
+
         localDumpName = cs->get( "localDumpFile");
 
         // go on and create the things
@@ -610,7 +610,7 @@ DarkIce :: configIceCast2 (  const Config      & config,
                                              lowpass,
                                              highpass );
 
-                audioOuts[u].encoder = new BufferedSink(encoder, bufferSize, dsp->getBitsPerSample() / 8);
+                audioOuts[u].encoder = new BufferedSink(encoder, bufferSize, dsp->getSampleSize());
 
 #endif // HAVE_LAME_LIB
                 break;
@@ -634,7 +634,7 @@ DarkIce :: configIceCast2 (  const Config      & config,
                                                dsp->getChannel(),
                                                maxBitrate);
 
-                audioOuts[u].encoder = new BufferedSink(encoder, bufferSize, dsp->getBitsPerSample() / 8);
+                audioOuts[u].encoder = new BufferedSink(encoder, bufferSize, dsp->getSampleSize());
 #endif // HAVE_VORBIS_LIB
                 break;
 
@@ -653,7 +653,7 @@ DarkIce :: configIceCast2 (  const Config      & config,
                                                 sampleRate,
                                                 channel );
 
-                audioOuts[u].encoder = new BufferedSink(encoder, bufferSize, dsp->getBitsPerSample() / 8);
+                audioOuts[u].encoder = new BufferedSink(encoder, bufferSize, dsp->getSampleSize());
 #endif // HAVE_TWOLAME_LIB
                 break;
 
@@ -674,7 +674,7 @@ DarkIce :: configIceCast2 (  const Config      & config,
                                           sampleRate,
                                           dsp->getChannel());
 
-                audioOuts[u].encoder = new BufferedSink(encoder, bufferSize, dsp->getBitsPerSample() / 8);
+                audioOuts[u].encoder = new BufferedSink(encoder, bufferSize, dsp->getSampleSize());
 #endif // HAVE_FAAC_LIB
                 break;
 
@@ -694,7 +694,7 @@ DarkIce :: configIceCast2 (  const Config      & config,
                                              sampleRate,
                                              channel );
 
-                audioOuts[u].encoder = new BufferedSink(encoder, bufferSize, dsp->getBitsPerSample() / 8);
+                audioOuts[u].encoder = new BufferedSink(encoder, bufferSize, dsp->getSampleSize());
 #endif // HAVE_AACPLUS_LIB
                 break;
 
@@ -777,13 +777,13 @@ DarkIce :: configShoutCast (    const Config      & config,
         bitrate     = str ? Util::strToL( str) : 0;
         str         = cs->get( "quality");
         quality     = str ? Util::strToD( str) : 0.0;
-        
+
         str         = cs->getForSure( "bitrateMode",
                                       " not specified in section ",
                                       stream);
         if ( Util::strEq( str, "cbr") ) {
             bitrateMode = AudioEncoder::cbr;
-            
+
             if ( bitrate == 0 ) {
                 throw Exception( __FILE__, __LINE__,
                                  "bitrate not specified for CBR encoding");
@@ -879,7 +879,7 @@ DarkIce :: configShoutCast (    const Config      & config,
                                              icq,
                                              localDumpFile);
 
-        
+
         encoder = new LameLibEncoder( audioOuts[u].server.get(),
                                       dsp.get(),
                                       bitrateMode,
@@ -889,7 +889,7 @@ DarkIce :: configShoutCast (    const Config      & config,
                                       channel,
                                       lowpass,
                                       highpass );
-        audioOuts[u].encoder = new BufferedSink(encoder, bufferSize, dsp->getBitsPerSample() / 8);
+        audioOuts[u].encoder = new BufferedSink(encoder, bufferSize, dsp->getSampleSize());
 
         encConnector->attach( audioOuts[u].encoder.get());
 #endif // HAVE_LAME_LIB
@@ -962,13 +962,13 @@ DarkIce :: configFileCast (  const Config      & config )
         bitrate     = str ? Util::strToL( str) : 0;
         str         = cs->get( "quality");
         quality     = str ? Util::strToD( str) : 0.0;
-        
+
         str         = cs->getForSure( "bitrateMode",
                                       " not specified in section ",
                                       stream);
         if ( Util::strEq( str, "cbr") ) {
             bitrateMode = AudioEncoder::cbr;
-            
+
             if ( bitrate == 0 ) {
                 throw Exception( __FILE__, __LINE__,
                                  "bitrate not specified for CBR encoding");
@@ -1147,7 +1147,7 @@ DarkIce :: setRealTimeScheduling ( void )               throw ( Exception )
         throw Exception( __FILE__, __LINE__, "sched_getparam", errno);
     }
     origSchedPriority = param.sched_priority;
-    
+
     /* set SCHED_FIFO with max - 1 priority or user configured value */
     if ( (high_priority = sched_get_priority_max(SCHED_FIFO)) == -1 ) {
         throw Exception(__FILE__,__LINE__,"sched_get_priority_max",errno);
@@ -1227,12 +1227,9 @@ DarkIce :: encode ( void )                          throw ( Exception )
     if ( !encConnector->open() ) {
         throw Exception( __FILE__, __LINE__, "can't open connector");
     }
-    
-    bytes = dsp->getSampleRate() *
-            (dsp->getBitsPerSample() / 8UL) *
-            dsp->getChannel() *
-            duration;
-                                 
+
+    bytes = dsp->getSampleRate() * dsp->getSampleSize() * duration;
+
     len = encConnector->transfer( bytes, 4096, 1, 0 );
 
     reportEvent( 1, len, "bytes transfered to the encoders");
@@ -1250,7 +1247,7 @@ int
 DarkIce :: run ( void )                             throw ( Exception )
 {
     reportEvent( 3, "encoding");
-    
+
     if (enableRealTime) {
         setRealTimeScheduling();
     }
@@ -1276,4 +1273,3 @@ DarkIce :: cut ( void )                             throw ()
 
     reportEvent( 5, "cutting ends");
 }
-
